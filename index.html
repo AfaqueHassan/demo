@@ -1,0 +1,1027 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full bg-slate-900">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tri-Plant Cement Operations & Executive AI Reporter</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        industrial: {
+                            50: '#f4f6f8',
+                            100: '#e5e9f0',
+                            500: '#64748b',
+                            800: '#1e293b',
+                            900: '#0f172a',
+                            accent: '#f97316', // Industrial Amber/Orange
+                            accentHover: '#ea580c',
+                            blue: '#3b82f6',
+                            green: '#10b981',
+                            yellow: '#f59e0b',
+                            red: '#ef4444'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Custom Scrollbars */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #1e293b;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #475569;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #64748b;
+        }
+        .glass-card {
+            background: rgba(30, 41, 59, 0.7);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        .glow-accent {
+            box-shadow: 0 0 15px rgba(249, 115, 22, 0.25);
+        }
+    </style>
+</head>
+<body class="h-full font-sans text-slate-100 bg-slate-950 flex flex-col antialiased selection:bg-orange-500 selection:text-white">
+
+    <!-- TOP NAV BAR HEADER -->
+    <header class="bg-slate-900 border-b border-slate-800 sticky top-0 z-30 shadow-lg">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                
+                <!-- Logo & Title -->
+                <div class="flex items-center space-x-3">
+                    <div class="bg-gradient-to-tr from-amber-600 to-orange-500 p-2.5 rounded-xl shadow-md text-slate-950">
+                        <i class="fa-solid fa-industry text-xl font-bold"></i>
+                    </div>
+                   <div>
+    <h1 class="text-lg sm:text-xl font-bold tracking-tight text-white flex items-center gap-2">
+        Farhan's Cement AI Command 
+        <span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-400 border border-amber-500/20">Manager Farhan</span>
+    </h1>
+    <p class="text-xs text-slate-400 hidden sm:block">Regional Operations Dashboard • Manager Farhan (Hyd, Rohri, KHI)</p>
+</div>
+                </div>
+
+                <!-- Plant Filter Controls -->
+                <div class="hidden md:flex items-center bg-slate-800/80 p-1 rounded-lg border border-slate-700/60 text-xs font-medium">
+                    <button onclick="filterPlant('ALL')" id="btn-plant-ALL" class="plant-btn active px-3 py-1.5 rounded-md text-white bg-amber-600 transition">
+                        <i class="fa-solid fa-earth-asia mr-1.5"></i>All Units
+                    </button>
+                    <button onclick="filterPlant('Hyd')" id="btn-plant-Hyd" class="plant-btn px-3 py-1.5 rounded-md text-slate-300 hover:text-white transition">
+                        Hyderabad
+                    </button>
+                    <button onclick="filterPlant('Rohri')" id="btn-plant-Rohri" class="plant-btn px-3 py-1.5 rounded-md text-slate-300 hover:text-white transition">
+                        Rohri
+                    </button>
+                    <button onclick="filterPlant('Karachi')" id="btn-plant-Karachi" class="plant-btn px-3 py-1.5 rounded-md text-slate-300 hover:text-white transition">
+                        Karachi
+                    </button>
+                </div>
+
+                <!-- Quick Action Buttons -->
+                <div class="flex items-center space-x-2">
+                    <button onclick="openModal('logModal')" class="bg-slate-800 hover:bg-slate-700 text-amber-400 hover:text-amber-300 border border-amber-500/30 px-3 py-2 rounded-lg text-xs font-semibold flex items-center transition shadow-sm">
+                        <i class="fa-solid fa-plus-circle mr-1.5 text-sm"></i> 
+                        <span class="hidden sm:inline">Add Daily Log</span>
+                    </button>
+                    <button onclick="generateExecutiveReport()" class="bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 text-slate-950 px-3.5 py-2 rounded-lg text-xs font-bold flex items-center transition shadow-md glow-accent">
+                        <i class="fa-solid fa-wand-magic-sparkles mr-1.5 text-sm"></i>
+                        <span>Generate AI Report</span>
+                    </button>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Mobile Plant Selector (Sub-bar) -->
+        <div class="md:hidden bg-slate-900 border-t border-slate-800/80 px-4 py-2 flex justify-between overflow-x-auto text-xs">
+            <button onclick="filterPlant('ALL')" id="mob-btn-ALL" class="px-2.5 py-1 rounded bg-amber-600 text-white font-medium">All Units</button>
+            <button onclick="filterPlant('Hyd')" id="mob-btn-Hyd" class="px-2.5 py-1 rounded text-slate-400">Hyderabad</button>
+            <button onclick="filterPlant('Rohri')" id="mob-btn-Rohri" class="px-2.5 py-1 rounded text-slate-400">Rohri</button>
+            <button onclick="filterPlant('Karachi')" id="mob-btn-Karachi" class="px-2.5 py-1 rounded text-slate-400">Karachi</button>
+        </div>
+    </header>
+
+    <!-- MAIN BODY CONTAINER -->
+    <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
+
+        <!-- CRITICAL ALERTS BANNER -->
+        <div id="alertsBanner" class="hidden glass-card border-l-4 border-l-amber-500 rounded-xl p-4 transition-all">
+            <div class="flex items-start justify-between">
+                <div class="flex items-start space-x-3">
+                    <div class="p-2 bg-amber-500/20 text-amber-400 rounded-lg mt-0.5">
+                        <i class="fa-solid fa-triangle-exclamation text-lg"></i>
+                    </div>
+                    <div>
+                        <h4 class="text-sm font-semibold text-amber-300">Operational Alerts Detected</h4>
+                        <p id="alertTextMessage" class="text-xs text-slate-300 mt-1">Rohri Plant: Kiln #2 experienced 3.5 hours of un-scheduled maintenance (Cooler Jam). Clinker stock low at Hyderabad.</p>
+                    </div>
+                </div>
+                <button onclick="dismissAlert()" class="text-slate-400 hover:text-slate-200 text-xs">
+                    <i class="fa-solid fa-xmark text-base"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- OVERVIEW KPI SUMMARY CARDS -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            
+            <!-- Card 1: Production -->
+            <div class="glass-card rounded-xl p-4 relative overflow-hidden group hover:border-slate-600 transition">
+                <div class="flex justify-between items-start">
+                    <div>
+                        <p class="text-xs font-medium text-slate-400 uppercase tracking-wider">Total Cement Production</p>
+                        <h3 class="text-2xl font-bold text-white mt-1" id="kpi-production">14,850 <span class="text-xs font-normal text-slate-400">Tons</span></h3>
+                    </div>
+                    <div class="p-2.5 bg-blue-500/10 text-blue-400 rounded-lg">
+                        <i class="fa-solid fa-dumpster text-lg"></i>
+                    </div>
+                </div>
+                <div class="mt-3 flex items-center justify-between text-xs">
+                    <span class="text-emerald-400 font-medium flex items-center">
+                        <i class="fa-solid fa-arrow-trend-up mr-1"></i> 98.2% Target Met
+                    </span>
+                    <span class="text-slate-400">Target: 15,100 T</span>
+                </div>
+                <div class="w-full bg-slate-800 h-1.5 rounded-full mt-2 overflow-hidden">
+                    <div id="bar-production" class="bg-gradient-to-r from-blue-500 to-indigo-500 h-1.5 rounded-full" style="width: 98.2%"></div>
+                </div>
+            </div>
+
+            <!-- Card 2: Kiln Operations -->
+            <div class="glass-card rounded-xl p-4 relative overflow-hidden group hover:border-slate-600 transition">
+                <div class="flex justify-between items-start">
+                    <div>
+                        <p class="text-xs font-medium text-slate-400 uppercase tracking-wider">Active Kilns Running</p>
+                        <h3 class="text-2xl font-bold text-white mt-1" id="kpi-kilns">5 / 6 <span class="text-xs font-normal text-slate-400">Active</span></h3>
+                    </div>
+                    <div class="p-2.5 bg-emerald-500/10 text-emerald-400 rounded-lg">
+                        <i class="fa-solid fa-fire-burner text-lg"></i>
+                    </div>
+                </div>
+                <div class="mt-3 flex items-center justify-between text-xs">
+                    <span class="text-amber-400 font-medium flex items-center" id="kpi-downtime">
+                        <i class="fa-solid fa-clock-rotate-left mr-1"></i> 3.5h Total Downtime
+                    </span>
+                    <span class="text-slate-400">Rohri Unit #2 Stopped</span>
+                </div>
+                <div class="w-full bg-slate-800 h-1.5 rounded-full mt-2 overflow-hidden">
+                    <div id="bar-kilns" class="bg-emerald-500 h-1.5 rounded-full" style="width: 83%"></div>
+                </div>
+            </div>
+
+            <!-- Card 3: Raw Material Stock Status -->
+            <div class="glass-card rounded-xl p-4 relative overflow-hidden group hover:border-slate-600 transition">
+                <div class="flex justify-between items-start">
+                    <div>
+                        <p class="text-xs font-medium text-slate-400 uppercase tracking-wider">Clinker Stock Reserve</p>
+                        <h3 class="text-2xl font-bold text-white mt-1" id="kpi-clinker">42,300 <span class="text-xs font-normal text-slate-400">Tons</span></h3>
+                    </div>
+                    <div class="p-2.5 bg-amber-500/10 text-amber-400 rounded-lg">
+                        <i class="fa-solid fa-cubes text-lg"></i>
+                    </div>
+                </div>
+                <div class="mt-3 flex items-center justify-between text-xs">
+                    <span class="text-slate-300">Limestone: <strong class="text-white" id="kpi-limestone">68,000T</strong></span>
+                    <span class="text-slate-300">Gypsum: <strong class="text-white" id="kpi-gypsum">8,400T</strong></span>
+                </div>
+                <div class="w-full bg-slate-800 h-1.5 rounded-full mt-2 overflow-hidden flex gap-0.5">
+                    <div title="Clinker" class="bg-amber-500 h-1.5" style="width: 55%"></div>
+                    <div title="Limestone" class="bg-slate-400 h-1.5" style="width: 30%"></div>
+                    <div title="Gypsum" class="bg-sky-400 h-1.5" style="width: 15%"></div>
+                </div>
+            </div>
+
+            <!-- Card 4: Dispatches & Logistics -->
+            <div class="glass-card rounded-xl p-4 relative overflow-hidden group hover:border-slate-600 transition">
+                <div class="flex justify-between items-start">
+                    <div>
+                        <p class="text-xs font-medium text-slate-400 uppercase tracking-wider">Dispatched Today</p>
+                        <h3 class="text-2xl font-bold text-white mt-1" id="kpi-trucks">482 <span class="text-xs font-normal text-slate-400">Trucks</span></h3>
+                    </div>
+                    <div class="p-2.5 bg-purple-500/10 text-purple-400 rounded-lg">
+                        <i class="fa-solid fa-truck-ramp-box text-lg"></i>
+                    </div>
+                </div>
+                <div class="mt-3 flex items-center justify-between text-xs">
+                    <span class="text-purple-300 font-medium">13,950 Tons Cement Shipped</span>
+                    <span class="text-slate-400">Local & Highway</span>
+                </div>
+                <div class="w-full bg-slate-800 h-1.5 rounded-full mt-2 overflow-hidden">
+                    <div id="bar-dispatch" class="bg-purple-500 h-1.5 rounded-full" style="width: 92%"></div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- MAIN CONTENT SECTION: CHARTS + AI ASSISTANT -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+            <!-- LEFT 2 COLUMNS: CHARTS & PLANT COMPARISON -->
+            <div class="lg:col-span-2 space-y-6">
+
+                <!-- CHART 1: Production Vs Target Comparison -->
+                <div class="glass-card rounded-xl p-5 border border-slate-800">
+                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 mb-4">
+                        <div>
+                            <h3 class="text-base font-bold text-white flex items-center gap-2">
+                                <i class="fa-solid fa-chart-column text-amber-500"></i>
+                                Unit-Wise Daily Production Breakdown
+                            </h3>
+                            <p class="text-xs text-slate-400">Actual Production vs Target (Tons) across Hyderabad, Rohri & Karachi</p>
+                        </div>
+                        <div class="flex items-center space-x-2 text-xs">
+                            <span class="flex items-center text-slate-300"><span class="w-2.5 h-2.5 rounded-full bg-amber-500 mr-1.5"></span>Actual Output</span>
+                            <span class="flex items-center text-slate-400"><span class="w-2.5 h-2.5 rounded-full bg-slate-600 mr-1.5"></span>Planned Target</span>
+                        </div>
+                    </div>
+                    <div class="h-64 relative">
+                        <canvas id="productionChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- THREE PLANT INDIVIDUAL CARDS OVERVIEW -->
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4" id="plantCardsContainer">
+                    
+                    <!-- Hyderabad Plant Card -->
+                    <div class="bg-slate-800/80 rounded-xl p-4 border border-slate-700/60 relative overflow-hidden">
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="text-xs font-bold px-2 py-0.5 rounded bg-blue-500/20 text-blue-400 border border-blue-500/30">HYDERABAD</span>
+                            <span class="text-xs text-emerald-400 font-medium"><i class="fa-solid fa-circle text-[8px] mr-1"></i>Operational</span>
+                        </div>
+                        <h4 class="text-lg font-bold text-white">4,800 <span class="text-xs font-normal text-slate-400">Tons</span></h4>
+                        <p class="text-xs text-slate-400 mt-0.5">Target: 5,000 Tons (96%)</p>
+                        <div class="mt-3 pt-3 border-t border-slate-700/50 space-y-1.5 text-xs">
+                            <div class="flex justify-between text-slate-300">
+                                <span>Kiln Status:</span>
+                                <span class="font-semibold text-slate-100">Kiln #1 (Active)</span>
+                            </div>
+                            <div class="flex justify-between text-slate-300">
+                                <span>Coal Consumed:</span>
+                                <span class="font-semibold text-slate-100">620 Tons</span>
+                            </div>
+                            <div class="flex justify-between text-slate-300">
+                                <span>Dispatch Trucks:</span>
+                                <span class="font-semibold text-slate-100">155 Trucks</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Rohri Plant Card -->
+                    <div class="bg-slate-800/80 rounded-xl p-4 border border-slate-700/60 relative overflow-hidden">
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="text-xs font-bold px-2 py-0.5 rounded bg-amber-500/20 text-amber-400 border border-amber-500/30">ROHRI</span>
+                            <span class="text-xs text-amber-400 font-medium"><i class="fa-solid fa-triangle-exclamation text-[10px] mr-1"></i>3.5h Downtime</span>
+                        </div>
+                        <h4 class="text-lg font-bold text-white">4,250 <span class="text-xs font-normal text-slate-400">Tons</span></h4>
+                        <p class="text-xs text-slate-400 mt-0.5">Target: 4,600 Tons (92.3%)</p>
+                        <div class="mt-3 pt-3 border-t border-slate-700/50 space-y-1.5 text-xs">
+                            <div class="flex justify-between text-slate-300">
+                                <span>Kiln Status:</span>
+                                <span class="font-semibold text-amber-400">Kiln #2 (Maintenance)</span>
+                            </div>
+                            <div class="flex justify-between text-slate-300">
+                                <span>Coal Consumed:</span>
+                                <span class="font-semibold text-slate-100">540 Tons</span>
+                            </div>
+                            <div class="flex justify-between text-slate-300">
+                                <span>Dispatch Trucks:</span>
+                                <span class="font-semibold text-slate-100">138 Trucks</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Karachi Plant Card -->
+                    <div class="bg-slate-800/80 rounded-xl p-4 border border-slate-700/60 relative overflow-hidden">
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="text-xs font-bold px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">KARACHI</span>
+                            <span class="text-xs text-emerald-400 font-medium"><i class="fa-solid fa-circle text-[8px] mr-1"></i>Peak Output</span>
+                        </div>
+                        <h4 class="text-lg font-bold text-white">5,800 <span class="text-xs font-normal text-slate-400">Tons</span></h4>
+                        <p class="text-xs text-slate-400 mt-0.5">Target: 5,500 Tons (105%)</p>
+                        <div class="mt-3 pt-3 border-t border-slate-700/50 space-y-1.5 text-xs">
+                            <div class="flex justify-between text-slate-300">
+                                <span>Kiln Status:</span>
+                                <span class="font-semibold text-slate-100">Kiln #1 & #2 (100%)</span>
+                            </div>
+                            <div class="flex justify-between text-slate-300">
+                                <span>Coal Consumed:</span>
+                                <span class="font-semibold text-slate-100">710 Tons</span>
+                            </div>
+                            <div class="flex justify-between text-slate-300">
+                                <span>Dispatch Trucks:</span>
+                                <span class="font-semibold text-slate-100">189 Trucks</span>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+
+            <!-- RIGHT 1 COLUMN: AI EXECUTIVE ASSISTANT CHAT & PROMPTS -->
+            <div class="glass-card rounded-xl border border-slate-800 flex flex-col h-[560px] overflow-hidden shadow-xl">
+                
+                <!-- AI Assistant Header -->
+                <div class="p-4 bg-slate-900/90 border-b border-slate-800 flex items-center justify-between">
+                    <div class="flex items-center space-x-2.5">
+                        <div class="relative">
+                            <div class="w-8 h-8 rounded-lg bg-gradient-to-tr from-amber-500 to-orange-500 flex items-center justify-center text-slate-950 font-bold">
+                                <i class="fa-solid fa-robot text-sm"></i>
+                            </div>
+                            <span class="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 bg-emerald-500 rounded-full border-2 border-slate-900"></span>
+                        </div>
+                        <div>
+                            <h3 class="text-sm font-bold text-white leading-tight">Operations Executive AI</h3>
+                            <p class="text-[11px] text-slate-400">Tri-Plant Cement Analyst Ready</p>
+                        </div>
+                    </div>
+                    <span class="text-[10px] font-mono px-2 py-0.5 bg-amber-500/10 text-amber-400 border border-amber-500/20 rounded">ONLINE</span>
+                </div>
+
+                <!-- Chat History Window -->
+                <div id="chatWindow" class="flex-1 p-4 overflow-y-auto space-y-3.5 text-xs">
+                    
+                    <!-- Bot Greeting Message -->
+                    <div class="flex items-start gap-2.5">
+                        <div class="w-6 h-6 rounded bg-amber-500/20 text-amber-400 flex items-center justify-center shrink-0 mt-0.5">
+                            <i class="fa-solid fa-robot text-xs"></i>
+                        </div>
+                        <div class="bg-slate-800/90 border border-slate-700/80 rounded-2xl rounded-tl-none p-3 text-slate-200 leading-relaxed shadow-sm">
+                            Salam Manager Sahib! 👋 I have analyzed today's data from <strong>Hyderabad</strong>, <strong>Rohri</strong>, and <strong>Karachi</strong>. 
+                            <br><br>
+                            How can I assist you right now? Click any quick prompt below or type your custom request.
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- Quick Prompt Suggestions Buttons -->
+                <div class="px-3 py-2 bg-slate-900/60 border-t border-slate-800/60 flex flex-wrap gap-1.5">
+                    <button onclick="triggerQuickPrompt('Summarize today\'s production for all 3 plants')" class="px-2.5 py-1 bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-300 hover:text-white rounded-full text-[11px] transition">
+                        📊 3-Plant Summary
+                    </button>
+                    <button onclick="triggerQuickPrompt('Why is Rohri production lower today?')" class="px-2.5 py-1 bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-300 hover:text-white rounded-full text-[11px] transition">
+                        ⚠️ Rohri Downtime Reason
+                    </button>
+                    <button onclick="triggerQuickPrompt('Draft a quick WhatsApp message for Director')" class="px-2.5 py-1 bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-300 hover:text-white rounded-full text-[11px] transition">
+                        📱 Director WhatsApp Draft
+                    </button>
+                </div>
+
+                <!-- Chat Input Field -->
+                <div class="p-3 bg-slate-900 border-t border-slate-800">
+                    <form onsubmit="handleChatSubmit(event)" class="flex items-center gap-2">
+                        <input id="chatInput" type="text" placeholder="Ask AI about plant stats, fuel, bottlenecks..." 
+                               class="flex-1 bg-slate-950 border border-slate-800 focus:border-amber-500 focus:ring-1 focus:ring-amber-500 rounded-lg px-3 py-2 text-xs text-white placeholder-slate-500 outline-none transition">
+                        <button type="submit" class="bg-amber-600 hover:bg-amber-500 text-slate-950 px-3.5 py-2 rounded-lg font-bold text-xs transition flex items-center justify-center shrink-0">
+                            <i class="fa-solid fa-paper-plane"></i>
+                        </button>
+                    </form>
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- RECENT LOGS & ACTIVITY TABLE -->
+        <div class="glass-card rounded-xl border border-slate-800 p-5">
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-4">
+                <div>
+                    <h3 class="text-base font-bold text-white flex items-center gap-2">
+                        <i class="fa-solid fa-list-check text-amber-500"></i>
+                        Live Daily Operations Logs
+                    </h3>
+                    <p class="text-xs text-slate-400">Shift entries submitted across all 3 central factory units</p>
+                </div>
+                <button onclick="openModal('logModal')" class="text-xs font-semibold text-amber-400 hover:text-amber-300 border border-amber-500/30 px-3 py-1.5 rounded-lg bg-amber-500/10">
+                    <i class="fa-solid fa-plus mr-1"></i> Add Shift Entry
+                </button>
+            </div>
+
+            <div class="overflow-x-auto">
+                <table class="w-full text-left text-xs text-slate-300">
+                    <thead class="bg-slate-900/80 text-slate-400 uppercase tracking-wider font-semibold border-b border-slate-800">
+                        <tr>
+                            <th class="py-3 px-3">Timestamp</th>
+                            <th class="py-3 px-3">Plant Unit</th>
+                            <th class="py-3 px-3">Shift</th>
+                            <th class="py-3 px-3">Production (Tons)</th>
+                            <th class="py-3 px-3">Kiln Downtime</th>
+                            <th class="py-3 px-3">Coal Consumed</th>
+                            <th class="py-3 px-3">Key Issues / Remarks</th>
+                            <th class="py-3 px-3 text-right">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="logsTableBody" class="divide-y divide-slate-800/60">
+                        <!-- Dynamic Rows -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="bg-slate-900 border-t border-slate-800 py-4 text-center text-xs text-slate-500">
+        <p>Cement Operations AI Executive Reporter • Supporting Hyderabad, Rohri, and Karachi Units</p>
+    </footer>
+
+    <!-- MODAL 1: ADD FAST LOG ENTRY FORM -->
+    <div id="logModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-lg overflow-hidden shadow-2xl transition-all">
+            <div class="p-4 bg-slate-800/90 border-b border-slate-700 flex justify-between items-center">
+                <h3 class="font-bold text-white text-sm flex items-center gap-2">
+                    <i class="fa-solid fa-pen-to-square text-amber-500"></i>
+                    Quick Plant Log Entry
+                </h3>
+                <button onclick="closeModal('logModal')" class="text-slate-400 hover:text-slate-200">
+                    <i class="fa-solid fa-xmark text-base"></i>
+                </button>
+            </div>
+            
+            <form onsubmit="handleLogFormSubmit(event)" class="p-5 space-y-4 text-xs">
+                
+                <div class="flex justify-between items-center bg-amber-500/10 p-2.5 rounded-lg border border-amber-500/20 text-amber-300">
+                    <span>Need quick testing data?</span>
+                    <button type="button" onclick="autoFillPresetLog()" class="px-2.5 py-1 bg-amber-600 hover:bg-amber-500 text-slate-950 font-bold rounded text-[11px] transition">
+                        ⚡ One-Click Auto-Fill Demo
+                    </button>
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-slate-400 mb-1 font-medium">Select Factory Unit</label>
+                        <select id="logPlant" class="w-full bg-slate-950 border border-slate-800 rounded-lg p-2.5 text-white outline-none focus:border-amber-500">
+                            <option value="Hyderabad">Hyderabad Unit</option>
+                            <option value="Rohri">Rohri Unit</option>
+                            <option value="Karachi">Karachi Unit</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-slate-400 mb-1 font-medium">Shift Timing</label>
+                        <select id="logShift" class="w-full bg-slate-950 border border-slate-800 rounded-lg p-2.5 text-white outline-none focus:border-amber-500">
+                            <option value="Morning (08:00 - 16:00)">Morning Shift</option>
+                            <option value="Evening (16:00 - 00:00)">Evening Shift</option>
+                            <option value="Night (00:00 - 08:00)">Night Shift</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-3 gap-3">
+                    <div>
+                        <label class="block text-slate-400 mb-1 font-medium">Production Output (Tons)</label>
+                        <input type="number" id="logProduction" placeholder="e.g. 2400" required
+                               class="w-full bg-slate-950 border border-slate-800 rounded-lg p-2.5 text-white outline-none focus:border-amber-500">
+                    </div>
+                    <div>
+                        <label class="block text-slate-400 mb-1 font-medium">Downtime (Hours)</label>
+                        <input type="number" step="0.5" id="logDowntime" placeholder="e.g. 0.5" required
+                               class="w-full bg-slate-950 border border-slate-800 rounded-lg p-2.5 text-white outline-none focus:border-amber-500">
+                    </div>
+                    <div>
+                        <label class="block text-slate-400 mb-1 font-medium">Coal Used (Tons)</label>
+                        <input type="number" id="logCoal" placeholder="e.g. 310" required
+                               class="w-full bg-slate-950 border border-slate-800 rounded-lg p-2.5 text-white outline-none focus:border-amber-500">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-slate-400 mb-1 font-medium">Key Operational Issues / Maintenance Remarks</label>
+                    <textarea id="logRemarks" rows="2" placeholder="e.g. Minor raw mill feeder choke resolved in 30 mins."
+                              class="w-full bg-slate-950 border border-slate-800 rounded-lg p-2.5 text-white outline-none focus:border-amber-500"></textarea>
+                </div>
+
+                <div class="pt-2 flex justify-end space-x-2">
+                    <button type="button" onclick="closeModal('logModal')" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 font-medium rounded-lg">Cancel</button>
+                    <button type="submit" class="px-4 py-2 bg-amber-600 hover:bg-amber-500 text-slate-950 font-bold rounded-lg transition">Save Shift Record</button>
+                </div>
+
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL 2: AI EXECUTIVE REPORT GENERATOR (READY TO COPY FOR WHATSAPP/EMAIL) -->
+    <div id="reportModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-2xl overflow-hidden shadow-2xl flex flex-col max-h-[90vh]">
+            
+            <div class="p-4 bg-slate-800/90 border-b border-slate-700 flex justify-between items-center">
+                <div class="flex items-center space-x-2">
+                    <i class="fa-solid fa-file-invoice text-amber-500 text-lg"></i>
+                    <div>
+                        <h3 class="font-bold text-white text-sm">AI Executive Daily Report</h3>
+                        <p class="text-[11px] text-slate-400">Formatted for WhatsApp & Director Email Update</p>
+                    </div>
+                </div>
+                <button onclick="closeModal('reportModal')" class="text-slate-400 hover:text-slate-200">
+                    <i class="fa-solid fa-xmark text-base"></i>
+                </button>
+            </div>
+
+            <div class="p-5 flex-1 overflow-y-auto space-y-4">
+                <div class="flex justify-between items-center text-xs">
+                    <span class="text-slate-400">Report Status: <strong class="text-emerald-400">Auto-Generated from Live Data</strong></span>
+                    <span class="text-slate-400" id="reportDate">Today</span>
+                </div>
+
+                <!-- Textarea showing generated output -->
+                <textarea id="reportTextContent" readonly rows="14" 
+                          class="w-full bg-slate-950 font-mono text-xs text-amber-100 p-4 border border-slate-800 rounded-xl outline-none focus:border-amber-500 leading-relaxed"></textarea>
+            </div>
+
+            <div class="p-4 bg-slate-900 border-t border-slate-800 flex justify-between items-center">
+                <span id="copyToast" class="text-xs text-emerald-400 font-medium hidden">
+                    <i class="fa-solid fa-circle-check mr-1"></i> Copied to clipboard!
+                </span>
+                <div class="flex space-x-2 ml-auto">
+                    <button onclick="closeModal('reportModal')" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold rounded-lg">Close</button>
+                    <button onclick="copyReportToClipboard()" class="px-4 py-2 bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 text-slate-950 font-bold text-xs rounded-lg transition flex items-center gap-1.5 shadow-md">
+                        <i class="fa-solid fa-copy"></i>
+                        <span>Copy Report Text</span>
+                    </button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+
+    <!-- JAVASCRIPT LOGIC -->
+    <script>
+        // CORE DEMO DATA STATE
+        let activeFilter = 'ALL';
+        
+        const plantData = {
+            Hyderabad: {
+                target: 5000,
+                production: 4800,
+                kilnStatus: 'Kiln #1 Active (100%)',
+                downtimeHours: 0,
+                coalTons: 620,
+                trucks: 155,
+                clinkerStock: 14200,
+                limestoneStock: 22000,
+                gypsumStock: 2800,
+                issues: 'Normal continuous operation.'
+            },
+            Rohri: {
+                target: 4600,
+                production: 4250,
+                kilnStatus: 'Kiln #2 Stopped (Cooler Jam)',
+                downtimeHours: 3.5,
+                coalTons: 540,
+                trucks: 138,
+                clinkerStock: 11500,
+                limestoneStock: 19000,
+                gypsumStock: 2100,
+                issues: 'Kiln #2 cooler grate jammed at 11:30 AM. Maintenance completed in 3.5h.'
+            },
+            Karachi: {
+                target: 5500,
+                production: 5800,
+                kilnStatus: 'Kiln #1 & #2 Active (105%)',
+                downtimeHours: 0,
+                coalTons: 710,
+                trucks: 189,
+                clinkerStock: 16600,
+                limestoneStock: 27000,
+                gypsumStock: 3500,
+                issues: 'Optimal efficiency achieved. Exceeded target output.'
+            }
+        };
+
+        let logs = [
+            {
+                time: '15:30 Today',
+                plant: 'Rohri',
+                shift: 'Morning',
+                production: 2100,
+                downtime: 3.5,
+                coal: 270,
+                remarks: 'Kiln #2 grate cooler clearance completed. Unit restarted.',
+                status: 'Resolved'
+            },
+            {
+                time: '14:15 Today',
+                plant: 'Karachi',
+                shift: 'Morning',
+                production: 2900,
+                downtime: 0,
+                coal: 355,
+                remarks: 'Raw mill feed rate increased by 4%. Smooth output.',
+                status: 'Normal'
+            },
+            {
+                time: '14:00 Today',
+                plant: 'Hyderabad',
+                shift: 'Morning',
+                production: 2400,
+                downtime: 0,
+                coal: 310,
+                remarks: 'Regular packing plant operation. Stock replenishment ongoing.',
+                status: 'Normal'
+            }
+        ];
+
+        let productionChartInstance = null;
+
+        // INITIALIZATION ON LOAD
+        window.onload = function() {
+            renderDashboard();
+            initChart();
+            renderLogsTable();
+            checkAlerts();
+        };
+
+        // RENDER DASHBOARD KPI DATA
+        function renderDashboard() {
+            let totalProd = 0;
+            let totalTarget = 0;
+            let totalDowntime = 0;
+            let totalTrucks = 0;
+            let totalClinker = 0;
+            let totalLimestone = 0;
+            let totalGypsum = 0;
+
+            const selectedPlants = activeFilter === 'ALL' ? ['Hyderabad', 'Rohri', 'Karachi'] : [activeFilter];
+
+            selectedPlants.forEach(plantKey => {
+                const p = plantData[plantKey];
+                totalProd += p.production;
+                totalTarget += p.target;
+                totalDowntime += p.downtimeHours;
+                totalTrucks += p.trucks;
+                totalClinker += p.clinkerStock;
+                totalLimestone += p.limestoneStock;
+                totalGypsum += p.gypsumStock;
+            });
+
+            // Update UI Elements
+            document.getElementById('kpi-production').innerHTML = `${totalProd.toLocaleString()} <span class="text-xs font-normal text-slate-400">Tons</span>`;
+            document.getElementById('kpi-downtime').innerHTML = `<i class="fa-solid fa-clock-rotate-left mr-1"></i> ${totalDowntime}h Total Downtime`;
+            document.getElementById('kpi-clinker').innerHTML = `${totalClinker.toLocaleString()} <span class="text-xs font-normal text-slate-400">Tons</span>`;
+            document.getElementById('kpi-limestone').innerText = `${totalLimestone.toLocaleString()}T`;
+            document.getElementById('kpi-gypsum').innerText = `${totalGypsum.toLocaleString()}T`;
+            document.getElementById('kpi-trucks').innerHTML = `${totalTrucks} <span class="text-xs font-normal text-slate-400">Trucks</span>`;
+
+            const percent = Math.min(100, Math.round((totalProd / totalTarget) * 100));
+            document.getElementById('bar-production').style.width = `${percent}%`;
+
+            if (activeFilter === 'ALL') {
+                document.getElementById('kpi-kilns').innerHTML = `5 / 6 <span class="text-xs font-normal text-slate-400">Active</span>`;
+            } else {
+                document.getElementById('kpi-kilns').innerHTML = plantData[activeFilter].downtimeHours > 0 ? `1 / 2 <span class="text-xs text-amber-400">Partial</span>` : `All Active`;
+            }
+        }
+
+        // PLANT FILTERING LOGIC
+        function filterPlant(plant) {
+            activeFilter = plant;
+
+            // Update Desktop buttons
+            document.querySelectorAll('.plant-btn').forEach(btn => {
+                btn.classList.remove('bg-amber-600', 'text-white');
+                btn.classList.add('text-slate-300');
+            });
+            const activeBtn = document.getElementById(`btn-plant-${plant}`);
+            if (activeBtn) {
+                activeBtn.classList.add('bg-amber-600', 'text-white');
+                activeBtn.classList.remove('text-slate-300');
+            }
+
+            // Update Mobile buttons
+            ['ALL', 'Hyd', 'Rohri', 'Karachi'].forEach(key => {
+                const mobBtn = document.getElementById(`mob-btn-${key}`);
+                if (mobBtn) {
+                    if (key === plant) {
+                        mobBtn.className = "px-2.5 py-1 rounded bg-amber-600 text-white font-medium";
+                    } else {
+                        mobBtn.className = "px-2.5 py-1 rounded text-slate-400";
+                    }
+                }
+            });
+
+            renderDashboard();
+            updateChart();
+        }
+
+        // INITIALIZE CHART.JS
+        function initChart() {
+            const ctx = document.getElementById('productionChart').getContext('2d');
+            productionChartInstance = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['Hyderabad Unit', 'Rohri Unit', 'Karachi Unit'],
+                    datasets: [
+                        {
+                            label: 'Actual Output (Tons)',
+                            data: [plantData.Hyderabad.production, plantData.Rohri.production, plantData.Karachi.production],
+                            backgroundColor: '#f97316',
+                            borderRadius: 6,
+                        },
+                        {
+                            label: 'Planned Target (Tons)',
+                            data: [plantData.Hyderabad.target, plantData.Rohri.target, plantData.Karachi.target],
+                            backgroundColor: '#334155',
+                            borderRadius: 6,
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        x: {
+                            grid: { color: 'rgba(255, 255, 255, 0.05)' },
+                            ticks: { color: '#94a3b8' }
+                        },
+                        y: {
+                            grid: { color: 'rgba(255, 255, 255, 0.05)' },
+                            ticks: { color: '#94a3b8' }
+                        }
+                    }
+                }
+            });
+        }
+
+        // UPDATE CHART ON FILTER CHANGE
+        function updateChart() {
+            if (!productionChartInstance) return;
+
+            if (activeFilter === 'ALL') {
+                productionChartInstance.data.labels = ['Hyderabad Unit', 'Rohri Unit', 'Karachi Unit'];
+                productionChartInstance.data.datasets[0].data = [plantData.Hyderabad.production, plantData.Rohri.production, plantData.Karachi.production];
+                productionChartInstance.data.datasets[1].data = [plantData.Hyderabad.target, plantData.Rohri.target, plantData.Karachi.target];
+            } else {
+                const pName = activeFilter === 'Hyd' ? 'Hyderabad' : activeFilter;
+                productionChartInstance.data.labels = [`${pName} Unit`];
+                productionChartInstance.data.datasets[0].data = [plantData[pName].production];
+                productionChartInstance.data.datasets[1].data = [plantData[pName].target];
+            }
+            productionChartInstance.update();
+        }
+
+        // RENDER LIVE LOGS TABLE
+        function renderLogsTable() {
+            const tbody = document.getElementById('logsTableBody');
+            tbody.innerHTML = '';
+
+            logs.forEach(log => {
+                const tr = document.createElement('tr');
+                tr.className = 'hover:bg-slate-800/40 transition';
+                
+                const statusBadge = log.status === 'Resolved' 
+                    ? '<span class="px-2 py-0.5 rounded bg-amber-500/10 text-amber-400 border border-amber-500/20 font-medium">Maintenance</span>'
+                    : '<span class="px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-medium">Optimal</span>';
+
+                tr.innerHTML = `
+                    <td class="py-3 px-3 text-slate-400">${log.time}</td>
+                    <td class="py-3 px-3 font-semibold text-white">${log.plant}</td>
+                    <td class="py-3 px-3 text-slate-300">${log.shift}</td>
+                    <td class="py-3 px-3 font-bold text-amber-400">${log.production.toLocaleString()} T</td>
+                    <td class="py-3 px-3 text-slate-300">${log.downtime > 0 ? log.downtime + ' hrs' : '0 hrs'}</td>
+                    <td class="py-3 px-3 text-slate-300">${log.coal} T</td>
+                    <td class="py-3 px-3 text-slate-400 max-w-xs truncate">${log.remarks}</td>
+                    <td class="py-3 px-3 text-right">${statusBadge}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        // CHECK ALERTS BANNER CONDITION
+        function checkAlerts() {
+            const banner = document.getElementById('alertsBanner');
+            if (plantData.Rohri.downtimeHours > 0 || plantData.Hyderabad.clinkerStock < 15000) {
+                banner.classList.remove('hidden');
+            } else {
+                banner.classList.add('hidden');
+            }
+        }
+
+        function dismissAlert() {
+            document.getElementById('alertsBanner').classList.add('hidden');
+        }
+
+        // MODAL CONTROLS
+        function openModal(id) {
+            document.getElementById(id).classList.remove('hidden');
+        }
+
+        function closeModal(id) {
+            document.getElementById(id).classList.add('hidden');
+        }
+
+        // ONE-CLICK DEMO AUTO-FILL FOR FORM
+        function autoFillPresetLog() {
+            document.getElementById('logPlant').value = 'Rohri';
+            document.getElementById('logShift').value = 'Morning (08:00 - 16:00)';
+            document.getElementById('logProduction').value = '2150';
+            document.getElementById('logDowntime').value = '1.5';
+            document.getElementById('logCoal').value = '280';
+            document.getElementById('logRemarks').value = 'Kiln feeder belt realignment completed smoothly.';
+        }
+
+        // SUBMIT NEW LOG FORM
+        function handleLogFormSubmit(e) {
+            e.preventDefault();
+            const plant = document.getElementById('logPlant').value;
+            const shiftVal = document.getElementById('logShift').value.split(' ')[0];
+            const prod = parseInt(document.getElementById('logProduction').value);
+            const downtime = parseFloat(document.getElementById('logDowntime').value);
+            const coal = parseInt(document.getElementById('logCoal').value);
+            const remarks = document.getElementById('logRemarks').value;
+
+            // Add to top of list
+            logs.unshift({
+                time: 'Just Now',
+                plant: plant,
+                shift: shiftVal,
+                production: prod,
+                downtime: downtime,
+                coal: coal,
+                remarks: remarks,
+                status: downtime > 0 ? 'Resolved' : 'Normal'
+            });
+
+            // Update main data object
+            if (plantData[plant]) {
+                plantData[plant].production += prod;
+                plantData[plant].downtimeHours += downtime;
+                plantData[plant].coalTons += coal;
+            }
+
+            renderLogsTable();
+            renderDashboard();
+            updateChart();
+            closeModal('logModal');
+
+            // Add notification response in AI Chat
+            appendChatMessage('bot', `✅ New shift record added for <strong>${plant} Unit</strong> (${prod} Tons output logged). Daily totals recalculated.`);
+        }
+
+        // AI ASSISTANT CHAT SYSTEM
+        function triggerQuickPrompt(promptText) {
+            document.getElementById('chatInput').value = promptText;
+            handleChatSubmit(new Event('submit'));
+        }
+
+        function handleChatSubmit(e) {
+            e.preventDefault();
+            const input = document.getElementById('chatInput');
+            const query = input.value.trim();
+            if (!query) return;
+
+            appendChatMessage('user', query);
+            input.value = '';
+
+            // Simulate Smart AI thinking and response
+            setTimeout(() => {
+                const response = generateAIAnswer(query);
+                appendChatMessage('bot', response);
+            }, 600);
+        }
+
+        function appendChatMessage(sender, text) {
+            const chatWindow = document.getElementById('chatWindow');
+            const msgDiv = document.createElement('div');
+            msgDiv.className = 'flex items-start gap-2.5';
+
+            if (sender === 'user') {
+                msgDiv.innerHTML = `
+                    <div class="ml-auto bg-amber-600/20 border border-amber-500/30 rounded-2xl rounded-tr-none p-3 text-amber-100 max-w-[85%]">
+                        ${text}
+                    </div>
+                `;
+            } else {
+                msgDiv.innerHTML = `
+                    <div class="w-6 h-6 rounded bg-amber-500/20 text-amber-400 flex items-center justify-center shrink-0 mt-0.5">
+                        <i class="fa-solid fa-robot text-xs"></i>
+                    </div>
+                    <div class="bg-slate-800/90 border border-slate-700/80 rounded-2xl rounded-tl-none p-3 text-slate-200 leading-relaxed shadow-sm max-w-[88%]">
+                        ${text}
+                    </div>
+                `;
+            }
+
+            chatWindow.appendChild(msgDiv);
+            chatWindow.scrollTop = chatWindow.scrollHeight;
+        }
+
+        function generateAIAnswer(query) {
+            const q = query.toLowerCase();
+
+            if (q.includes('summary') || q.includes('production') || q.includes('all 3')) {
+                const total = plantData.Hyderabad.production + plantData.Rohri.production + plantData.Karachi.production;
+                return `<strong>Tri-Plant Operational Summary:</strong><br>
+                • <strong>Total Daily Cement:</strong> ${total.toLocaleString()} Tons<br>
+                • <strong>Karachi Unit:</strong> 5,800 Tons (Exceeded target by 5%)<br>
+                • <strong>Hyderabad Unit:</strong> 4,800 Tons (96% target met)<br>
+                • <strong>Rohri Unit:</strong> 4,250 Tons (Slight drop due to 3.5h kiln maintenance)<br>
+                Overall production efficiency is sitting strong at <strong>98.2%</strong>.`;
+            }
+
+            if (q.includes('rohri') || q.includes('downtime') || q.includes('lower')) {
+                return `<strong>Rohri Plant Maintenance Report:</strong><br>
+                Rohri Kiln #2 encountered a cooler grate jam resulting in <strong>3.5 hours of downtime</strong>. The maintenance crew cleared the obstruction and restarted operations safely. Target deficit is minimal (${4600 - plantData.Rohri.production} Tons).`;
+            }
+
+            if (q.includes('whatsapp') || q.includes('director') || q.includes('draft')) {
+                return `Here is a quick snippet formatted for your Executive Director:<br><br>
+                <em>"Respected Director, Today's regional cement production reached 14,850 Tons across Karachi (5,800T), Hyderabad (4,800T), and Rohri (4,250T). Rohri Kiln #2 delay of 3.5h is resolved. Dispatched 482 total trucks today. Detailed report generated in portal."</em><br><br>
+                💡 You can click top button <strong>'Generate AI Report'</strong> for full formatted text!`;
+            }
+
+            return `I have evaluated your query against current logistics & production data. Total regional dispatch stands at <strong>${plantData.Hyderabad.trucks + plantData.Rohri.trucks + plantData.Karachi.trucks} trucks</strong> today with clinker stock at <strong>42,300 Tons</strong> across all 3 central plants.`;
+        }
+
+        // GENERATE AUTOMATED EXECUTIVE DAILY REPORT
+        function generateExecutiveReport() {
+            const todayStr = new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+            document.getElementById('reportDate').innerText = `Date: ${todayStr}`;
+
+            const totalProd = plantData.Hyderabad.production + plantData.Rohri.production + plantData.Karachi.production;
+            const totalTarget = plantData.Hyderabad.target + plantData.Rohri.target + plantData.Karachi.target;
+            const totalTrucks = plantData.Hyderabad.trucks + plantData.Rohri.trucks + plantData.Karachi.trucks;
+
+            const reportTemplate = 
+`🏭 REGIONAL CEMENT OPERATIONS EXECUTIVE REPORT
+Date: ${todayStr}
+Regional Manager: Sindh Operations (Hyderabad, Rohri, Karachi)
+--------------------------------------------------
+
+1. EXECUTIVE SUMMARY
+• Total Regional Production: ${totalProd.toLocaleString()} Tons (Target: ${totalTarget.toLocaleString()} Tons)
+• Target Achievement: ${((totalProd/totalTarget)*100).toFixed(1)}%
+• Dispatch Deliveries: ${totalTrucks} Trucks Shipped Today
+
+2. PLANT-BY-PLANT OPERATIONAL BREAKDOWN
+• HYDERABAD UNIT:
+  - Cement Output: ${plantData.Hyderabad.production.toLocaleString()} Tons (Target: ${plantData.Hyderabad.target.toLocaleString()} T)
+  - Kiln Status: ${plantData.Hyderabad.kilnStatus}
+  - Coal Consumed: ${plantData.Hyderabad.coalTons} Tons
+
+• ROHRI UNIT:
+  - Cement Output: ${plantData.Rohri.production.toLocaleString()} Tons (Target: ${plantData.Rohri.target.toLocaleString()} T)
+  - Kiln Status: ${plantData.Rohri.kilnStatus}
+  - Maintenance Issue: Cooler grate jam resolved (3.5h downtime)
+
+• KARACHI UNIT:
+  - Cement Output: ${plantData.Karachi.production.toLocaleString()} Tons (Target: ${plantData.Karachi.target.toLocaleString()} T)
+  - Status: Exceeded daily planned production target by +5%.
+
+3. RAW MATERIAL STOCK RESERVES
+• Clinker Stock: ${(plantData.Hyderabad.clinkerStock + plantData.Rohri.clinkerStock + plantData.Karachi.clinkerStock).toLocaleString()} Tons
+• Limestone Stock: ${(plantData.Hyderabad.limestoneStock + plantData.Rohri.limestoneStock + plantData.Karachi.limestoneStock).toLocaleString()} Tons
+• Gypsum Stock: ${(plantData.Hyderabad.gypsumStock + plantData.Rohri.gypsumStock + plantData.Karachi.gypsumStock).toLocaleString()} Tons
+
+4. ACTION PLAN FOR TOMORROW
+• Monitor Rohri Kiln #2 thermal performance post-repair.
+• Maintain steady dispatch rate for Karachi highway transport fleet.
+
+--------------------------------------------------
+Report Generated via Regional Operations AI Assistant`;
+
+            document.getElementById('reportTextContent').value = reportTemplate;
+            openModal('reportModal');
+        }
+
+        // COPY TO CLIPBOARD METHOD
+        function copyReportToClipboard() {
+            const textarea = document.getElementById('reportTextContent');
+            textarea.select();
+            document.execCommand('copy');
+
+            const toast = document.getElementById('copyToast');
+            toast.classList.remove('hidden');
+            setTimeout(() => toast.classList.add('hidden'), 3000);
+        }
+    </script>
+</body>
+</html>
